@@ -15,7 +15,8 @@ export class Game {
 
         //keeps track of pressed keys
         this.keys = {}
-        this.lastTime;
+        this.lastTime = 0
+        this.state = 'menu'
 
         this.init() //starts game loop via animationFrame
     }
@@ -23,6 +24,7 @@ export class Game {
         this.resizeCanvas()
         window.addEventListener('resize', () => this.resizeCanvas())
         this.setupInput()
+        this.setupUI()
         
         //starts counting time when gameloop starts
         this.lastTime = performance.now()
@@ -31,16 +33,54 @@ export class Game {
         //triggers first gameLoop call
         requestAnimationFrame((t) => this.gameLoop(t))
     }
-
+    gameLoop(timeStamp) {
+        const dt = Math.min( (timeStamp - this.lastTime) / 1000,   0.1)
+       
+        this.lastTime = timeStamp
+        this.update(dt)
+        
+        this.render()
+    
+        requestAnimationFrame((t) => this.gameLoop(t))
+    }
+    update(dt) { //runs every frame
+        if (this.state !== 'playing') return
+        this.player.update(dt, this.keys)
+    }
+    render() {
+        if (this.state == 'menu') {
+            this.ctx.fillStyle  = '#0f3460'
+            this.ctx.fillRect(0,0, this.canvas.width, this.canvas.height)
+        } else {
+            this.renderSystem.render(this.player)
+        }
+    }
 
     setupInput() {
-        window.addEventListener('keydown', (e) => {
-            this.keys[e.key.toLowerCase()] = true
+        window.addEventListener('keydown', ({key}) => {
+            this.keys[key.toLowerCase()] = true
             
+            const ESC = this.keys['escape']
+            const isPlaying = this.state == 'playing' && ESC 
+            const isPaused = this.state == 'paused' && ESC 
+
+            isPlaying && this.pause()
+            isPaused && this.resume()
+
+
+
+            //esc pauses game
+            // if (key == 'Escape') {
+            //     if (this.state == 'playing') {
+            //         this.pause()
+            //     } else if (this.state == 'paused') {
+            //         this.resume()
+            //     }
+            // }
         })
 
-        window.addEventListener('keyup', (e) => {
-            this.keys[e.key.toLowerCase()] = false
+        window.addEventListener('keyup', ({key}) => {
+            this.keys[key.toLowerCase()] = false
           
         })
 
@@ -52,6 +92,35 @@ export class Game {
             this.keys = {}          
         })                   
     }
+    setupUI() {
+        window.playBtn.onclick = () => this.startGame()
+        window.resumeBtn.onclick = () => this.resume()
+        window.quitBtn.onclick = () => this.quitToMenu()
+    }
+    hideAllPanels(){
+        document.querySelectorAll('.ui-panel').forEach(node => node.classList.remove('active'))
+    }
+    startGame() {
+        this.state = 'playing'
+        this.hideAllPanels()
+    }
+    pause(){
+        this.state = 'paused'
+        window.pauseMenu.classList.add('active')
+    }
+    resume(){
+        this.state = 'playing'
+        window.pauseMenu.classList.remove('active')
+    }
+    quitToMenu(){
+        this.returnToMenu()
+    }
+    returnToMenu(){
+        this.state = 'menu'
+        this.hideAllPanels()
+        window.mainMenu.classList.add('active')
+    } 
+
     resizeCanvas() {
         const ratio = 16 / 9
         let w;
@@ -76,15 +145,5 @@ export class Game {
         this.canvas.style.height = h+'px'
         this.canvas.style.margin = margin+'px'
     }
-    gameLoop(timeStamp) {
-        const dt = Math.min( (timeStamp - this.lastTime) / 1000,   0.1)
-       
-        this.lastTime = timeStamp
-        this.update(dt)
-        this.renderSystem.render(this.player)
-        requestAnimationFrame((t) => this.gameLoop(t))
-    }
-    update(dt) { //runs every frame
-        this.player.update(dt, this.keys)
-    }
+
 }

@@ -2,13 +2,13 @@ import {GAME_WIDTH, GAME_HEIGHT} from './constants.js'
 export class Player {
     constructor() {
 
-        this.width = 164
-        this.height = 164
+        this.width = 64
+        this.height = 64
 
         this.x = (GAME_WIDTH - this.width) / 2
         this.y = (GAME_HEIGHT - this.height) / 2
 
-        this.speed = 100 //pixels moved per sec
+        this.speed = 300 //pixels moved per sec
 
         //upgrade multipliers
         this.speedMultiplier = 1

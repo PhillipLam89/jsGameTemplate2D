@@ -2,4 +2,4 @@ import { Game } from "./Game.js";
 
 
 const game = new Game()
-console.log(game, 'game class created')
+console.log(game, 'game init')
