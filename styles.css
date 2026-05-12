@@ -1,0 +1,26 @@
+
+ * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+} 
+  
+body {
+  background: burlywood;
+  overflow: hidden;
+}
+#gameContainer {
+ display: flex;
+ height: 100dvh;
+ position: relative;
+ justify-content: center;
+ align-items: center;
+
+}
+#gameCanvas {
+
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  background: #1a1a2e;
+}
