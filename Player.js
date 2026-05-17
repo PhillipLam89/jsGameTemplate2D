@@ -1,18 +1,24 @@
 import {GAME_WIDTH, GAME_HEIGHT} from './constants.js'
 export class Player {
-    constructor() {
-
+    constructor(game) {
+        this.game = game
         this.width = 64
         this.height = 64
 
         this.x = (GAME_WIDTH - this.width) / 2
         this.y = (GAME_HEIGHT - this.height) / 2
 
-        this.speed = 300 //pixels moved per sec
+        this.speed = 200  //pixels moved per sec
 
         //upgrade multipliers
         this.speedMultiplier = 1
 
+    }
+
+    reset() {
+            this.x = (GAME_WIDTH - this.width) / 2
+        this.y = (GAME_HEIGHT - this.height) / 2
+        this.speedMultiplier = 1
     }
 
     update(dt, keys) { //moves player
@@ -23,7 +29,7 @@ export class Player {
         if (keys['a'] || keys['arrowleft']) dx -= 1
         if (keys['d'] || keys['arrowright']) dx += 1
 
-
+   
         if (dx || dy) {//makes diagonal movement not as fast
             const len = Math.sqrt(dx*dx + dy*dy) 
             dx = dx / len
