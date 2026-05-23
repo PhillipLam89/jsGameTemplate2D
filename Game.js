@@ -1,9 +1,10 @@
-import { GAME_HEIGHT, GAME_WIDTH } from "./constants.js"
+import { GAME_HEIGHT, GAME_WIDTH, ASPECT_RATIO, CANVAS_MARGIN, GAME_STATES } from "./constants.js"
 import { RenderSystem } from "./RenderSystem.js"
 import { Player } from "./Player.js"
 import { ImageManager } from "./ImageManager.js"
 import { AudioManager } from "./AudioManager.js"
 import { UIManager } from "./UIManager.js"
+import { EnemyManager } from "./EnemyManager.js"
 export class Game {
     constructor() {
         this.canvas = window.gameCanvas
@@ -11,6 +12,8 @@ export class Game {
 
         this.imageManager = new ImageManager()
         this.audioManager = new AudioManager()
+        this.uiManager = new UIManager(this) //handles panels, menus etc.
+        this.enemyManager = new EnemyManager()
 
         this.renderSystem = new RenderSystem(this, this.canvas, this.imageManager)
         this.player = new Player(this)
@@ -19,7 +22,7 @@ export class Game {
         this.keys = {tab:'off'}
         this.time = 0
         this.lastTime = 0
-        this.state = 'menu';
+        this.state = GAME_STATES.MENU;
   
     
         this.init() //starts game loop via animationFrame
@@ -29,20 +32,20 @@ export class Game {
         await Promise.all([
              this.imageManager.loadAll(),
              this.audioManager.loadAll(),
-             this.uiManager = new UIManager(this) //gives access to Game class from UI_Manager
+
             //  new Promise(resolve => setTimeout(resolve, 1))
         ]);
               
         //loadin screen
-       [await new Promise(resolve => setTimeout(resolve, 55))]
+    //    [await new Promise(resolve => setTimeout(resolve, 55))]
 
         this.uiManager.showPanel('mainMenu')
 
-        
+      
         this.setupInput()
         this.resizeCanvas()
         window.addEventListener('resize', () => this.resizeCanvas())
-        // this.setupInput()
+     
 
         
         //starts counting time when gameloop starts
@@ -57,20 +60,23 @@ export class Game {
         const dt = Math.min( (timeStamp - this.lastTime) / 1000,   0.1)
         this.lastTime = timeStamp
         
-        if (this.state == 'playing') {
+        if (this.state == GAME_STATES.PLAYING) {
             this.time+= dt
             this.uiManager.updateTimer(this.time)
         }
         
 
         this.update(dt)
-        this.renderSystem.render(this.state, this.player)
+        this.renderSystem.render(this.state, 
+                                this.player,
+                                this.enemyManager.getActiveEnemies())
     
         requestAnimationFrame((t) => this.gameLoop(t))
     }
     update(dt) { //runs every frame
-        if (this.state !== 'playing') return
+        if (this.state !== GAME_STATES.PLAYING) return
         this.player.update(dt, this.keys)
+        this.enemyManager.update(dt, this.player)
     }
 
 
@@ -83,8 +89,8 @@ export class Game {
             else this.keys[key.toLowerCase()] = true
             
             const ESC = this.keys['escape']
-            const isPlaying = this.state == 'playing' && ESC 
-            const isPaused = this.state == 'paused' && ESC 
+            const isPlaying = this.state == GAME_STATES.PLAYING && ESC 
+            const isPaused = this.state == GAME_STATES.PAUSED && ESC 
 
             isPlaying && this.pause()
             isPaused && this.resume()
@@ -108,51 +114,56 @@ export class Game {
 
 
     startGame() {
-         this.audioManager.play('button_click')
-        this.state = 'playing'
+         this.playSound('button_click')
+        this.state = GAME_STATES.PLAYING
         this.uiManager.hideAllPanels()
-        this.time = 0
+        this.time = 0  
         this.uiManager.showTimer()
 
         //resets player position if restarted
         this.player.reset()
+        this.enemyManager.spawn(200,200)
 
         this.lastTime = performance.now()
     }
     pause(){
-        this.audioManager.play('pause')
-        this.state = 'paused'
+        this.playSound('pause')
+        this.state = GAME_STATES.PAUSED
         this.uiManager.showPanel('pauseMenu')
     }
     resume(){
-        this.audioManager.play('unpause')
-        this.state = 'playing'
+        this.playSound('unpause')
+        this.state = GAME_STATES.PLAYING
         this.uiManager.hideAllPanels()
     }
 
     returnToMenu(){
-        this.audioManager.play('button_click')
+        this.playSound('button_click')
         this.state = 'menu'
         this.uiManager.hideAllPanels()
         this.uiManager.hideTimer()
         this.uiManager.showPanel('mainMenu')
     } 
 
+    playSound(name) {
+        this.audioManager.play(name)
+    }
+
     resizeCanvas() {
-        const ratio = 16 / 9
+     
         let w;
         let h;
         const margin = 35
 
-        const availableWidth = window.innerWidth - (margin * 2)
-        const availableHeight = window.innerHeight - (margin * 2)
+        const availableWidth = window.innerWidth - (CANVAS_MARGIN * 2)
+        const availableHeight = window.innerHeight - (CANVAS_MARGIN * 2)
 
-        if (availableWidth / availableHeight > ratio) { //when window is too wide
+        if (availableWidth / availableHeight > ASPECT_RATIO) { //when window is too wide
             h = availableHeight
-            w = h * ratio
+            w = h * ASPECT_RATIO
         } else {
             w = availableWidth
-            h = w / ratio
+            h = w / ASPECT_RATIO
         }
 
         this.canvas.width = GAME_WIDTH
@@ -160,7 +171,7 @@ export class Game {
 
         this.canvas.style.width = w+'px'
         this.canvas.style.height = h+'px'
-        this.canvas.style.margin = margin+'px'
+        this.canvas.style.margin = CANVAS_MARGIN + 'px'
     }
 
 }

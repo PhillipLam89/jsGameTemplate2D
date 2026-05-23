@@ -1,4 +1,4 @@
-import { GAME_WIDTH, GAME_HEIGHT, GRID_SIZE } from "./constants.js"
+import { GAME_WIDTH, GAME_HEIGHT, GRID_SIZE, GAME_STATES } from "./constants.js"
 
 export class RenderSystem {
     constructor(game, canvas, imageManager) {
@@ -7,14 +7,15 @@ export class RenderSystem {
         this.ctx = canvas.getContext('2d')
         this.imageManager = imageManager
     }
-    render(state, player) {
-     if (state == 'menu') {
+    render(state, player, enemies = []) {
+     if (state == GAME_STATES.MENU) {
         this.renderMenuBackground()
      } else {
         this.ctx.fillStyle = 'chartreuse'
         this.ctx.fillRect(0,0,GAME_WIDTH,GAME_HEIGHT)  
+        // the below drawing order puts enemies on top of game grid but under the player
         this.renderGrid()
-
+        this.renderEnemies(enemies)
         this.renderPlayer(player)
      }
 
@@ -46,6 +47,13 @@ export class RenderSystem {
         }
 
     }
+
+    renderEnemies(enemies) {
+        for (const enemy of enemies) {
+            this.ctx.fillStyle = 'deeppink'
+            this.ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height)
+        }
+    }
     renderGrid() {
                    this.ctx.strokeStyle = 'blue'
         this.ctx.lineWidth = 3
@@ -67,6 +75,6 @@ export class RenderSystem {
     }
     renderMenuBackground() {
             this.ctx.fillStyle  = '#0f3460'
-            this.ctx.fillRect(0,0, this.canvas.width, this.canvas.height) 
+            this.ctx.fillRect(0,0, GAME_WIDTH, GAME_HEIGHT) 
     }
 }
