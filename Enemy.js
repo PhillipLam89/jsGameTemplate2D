@@ -18,6 +18,8 @@ export class Enemy {
         Object.assign(this, data)
         this.behavior = behavior
         this.active = false
+        this.facingLeft = false
+        this.oldX = 0
     }
 
     spawn(x,y) {
@@ -49,8 +51,11 @@ export class Enemy {
             this.active = false
             return
         }    
-       
+        
+        this.oldX = this.x
         this.behavior.update(this, dt, player)
+
+        this.facingLeft = (this.x < this.oldX) ? true : false 
 
     }
 }

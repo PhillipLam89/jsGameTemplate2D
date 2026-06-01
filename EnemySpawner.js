@@ -10,7 +10,7 @@ export class EnemySpawner { //handles timing, spawn location, type
         // for (const type in enemyData) {
         //     this.enemyTypes.push(type)
         // }
-        console.log(this.enemyTypes)
+   
     }
     update(dt) {
         this.spawnTimer+= dt

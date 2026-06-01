@@ -50,9 +50,21 @@ export class RenderSystem {
 
     renderEnemies(enemies) {
         for (const enemy of enemies) {
-            this.ctx.fillStyle = enemy.data.color
-            this.ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height)
+            const enemyImage = this.imageManager.get(enemy.data.image)
+
+            if (enemyImage) {
+                this.ctx.save() //enemy will face the player correctly as player moves
+                const isLeft = enemy.facingLeft
+               
+                isLeft && this.ctx.translate(enemy.x + enemy.width, enemy.y)
+                this.ctx.scale( (isLeft ? -1 : 1) , 1)    
+                
+                this.ctx.drawImage(enemyImage, (isLeft ? 0 : enemy.x), (isLeft ? 0 : enemy.y) , enemy.width, enemy.height) 
+                this.ctx.restore()
+
+            } 
         }
+           
     }
     renderGrid() {
                    this.ctx.strokeStyle = 'blue'

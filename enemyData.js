@@ -1,23 +1,25 @@
 export const enemyData = {
     drifter: {
-        width: 55,
-        height: 55,
+        width: 48,
+        height: 48,
         speed: 80,
         health: 1,
         damage: 1,
         collisionRadius: 24,
         behaviorType: 'drift',
-        color: 'red'
+        color: 'red',
+        image: 'enemy_drifter'
     },
     seeker: {
-        width: 55,
-        height: 55,
-        speed: 50,
+        width: 38,
+        height: 28,
+        speed: 120,
         health: 1,
         damage: 1,
-        collisionRadius: 24,
+        collisionRadius: 28,
         behaviorType: 'seek',
-        color: 'blue'
+        color: 'blue',
+        image: 'enemy_seeker'
     }
 }
 

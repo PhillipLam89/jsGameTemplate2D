@@ -10,6 +10,19 @@ export class Game {
     constructor() {
         this.canvas = window.gameCanvas
         this.hitBoxOn = false
+        this.throttleFunc = function(func, limit)  {
+          
+            let inThrottle
+            return (...args) => {
+                if (!inThrottle) {
+                func.apply(this, args)
+               
+                inThrottle = true
+             
+                setTimeout(() => inThrottle = false, limit)
+                }
+            }
+    }
 
         this.imageManager = new ImageManager()
         this.audioManager = new AudioManager()
@@ -46,7 +59,7 @@ export class Game {
       
         this.setupInput()
         this.resizeCanvas()
-        window.addEventListener('resize', () => this.resizeCanvas())
+        window.addEventListener('resize', this.throttleFunc(this.resizeCanvas, 100))
      
 
         

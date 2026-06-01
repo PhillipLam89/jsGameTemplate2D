@@ -29,7 +29,9 @@ export class ImageManager {
         
     async loadAll() {
         await Promise.all([
-             this.load('player', 'images/player.png')
+             this.load('player', 'images/player.png'),
+             this.load('enemy_drifter', 'images/enemy_drifter.png'),
+             this.load('enemy_seeker', 'images/enemy_seeker.png')
         ])
        
         // await new Promise(resolve => setTimeout(resolve, 1111))
