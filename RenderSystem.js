@@ -50,7 +50,7 @@ export class RenderSystem {
 
     renderEnemies(enemies) {
         for (const enemy of enemies) {
-            this.ctx.fillStyle = 'deeppink'
+            this.ctx.fillStyle = enemy.data.color
             this.ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height)
         }
     }

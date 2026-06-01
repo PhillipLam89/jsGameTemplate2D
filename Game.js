@@ -5,6 +5,7 @@ import { ImageManager } from "./ImageManager.js"
 import { AudioManager } from "./AudioManager.js"
 import { UIManager } from "./UIManager.js"
 import { EnemyManager } from "./EnemyManager.js"
+import { EnemySpawner } from "./EnemySpawner.js"
 export class Game {
     constructor() {
         this.canvas = window.gameCanvas
@@ -14,6 +15,7 @@ export class Game {
         this.audioManager = new AudioManager()
         this.uiManager = new UIManager(this) //handles panels, menus etc.
         this.enemyManager = new EnemyManager()
+        this.enemySpawner = new EnemySpawner(this.enemyManager)
 
         this.renderSystem = new RenderSystem(this, this.canvas, this.imageManager)
         this.player = new Player(this)
@@ -77,6 +79,7 @@ export class Game {
         if (this.state !== GAME_STATES.PLAYING) return
         this.player.update(dt, this.keys)
         this.enemyManager.update(dt, this.player)
+        this.enemySpawner.update(dt)
     }
 
 
@@ -122,7 +125,9 @@ export class Game {
 
         //resets player position if restarted
         this.player.reset()
-        this.enemyManager.spawn(200,200)
+        this.enemyManager.reset()
+        this.enemySpawner.reset()
+
 
         this.lastTime = performance.now()
     }

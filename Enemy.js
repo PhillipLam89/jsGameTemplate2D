@@ -1,5 +1,6 @@
+import { GAME_WIDTH, GAME_HEIGHT, ENEMY_DESPAWN_MARGIN } from "./constants.js"
 export class Enemy {
-    constructor(data = {}) {
+    constructor(data = {}, behavior) {
         this.data = data
 
         //psotion n dimensions
@@ -15,26 +16,41 @@ export class Enemy {
         // this.collisionRadius = data.collisionRadius
 
         Object.assign(this, data)
+        this.behavior = behavior
+        this.active = false
     }
 
     spawn(x,y) {
         this.x = x
         this.y = y
         this.health = this.data.health
+        this.active = true
     }
+    reset() {
+        this.active = false
+        this.health = this.data.health
 
+        this.behavior.reset && this.behavior.reset()
+    }
     update(dt, player) {
-        //calculates direct path towards player
-        let dx = player.x - this.x
-        let dy = player.y - this.y
-        const len = Math.hypot(dx, dy)
 
-        if (len > 0) {
-            dx = dx / len
-            dy = dy / len
+        if (!this.active) return 
 
-            this.x+= dx * this.speed * dt
-            this.y+= dy * this.speed * dt
-        }
+        //de-spawn enemy if off screen
+        const isOffScreen = (this.x < -ENEMY_DESPAWN_MARGIN 
+                                ||
+                            this.x > GAME_WIDTH + ENEMY_DESPAWN_MARGIN
+                                ||
+                            this.y < -ENEMY_DESPAWN_MARGIN
+                                ||
+                            this.y > GAME_HEIGHT + ENEMY_DESPAWN_MARGIN)
+      
+        if (isOffScreen) {
+            this.active = false
+            return
+        }    
+       
+        this.behavior.update(this, dt, player)
+
     }
 }
