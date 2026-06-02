@@ -16,7 +16,7 @@ export class EnemySpawner { //handles timing, spawn location, type
         this.spawnTimer+= dt
         if (this.spawnTimer >= this.spawnInterval) {
             this.spawnWave()
-            this.spawnTimer = 0
+            this.spawnTimer -= this.spawnInterval
         }
     }
     spawnWave(){

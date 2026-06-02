@@ -1,4 +1,5 @@
-import { GAME_HEIGHT, GAME_WIDTH, ASPECT_RATIO, CANVAS_MARGIN, GAME_STATES } from "./constants.js"
+import { GAME_HEIGHT, GAME_WIDTH, ASPECT_RATIO, CANVAS_MARGIN, GAME_STATES, EVENTS } from "./constants.js"
+import { EventEmitter } from "./EventEmitter.js"
 import { RenderSystem } from "./RenderSystem.js"
 import { Player } from "./Player.js"
 import { ImageManager } from "./ImageManager.js"
@@ -10,6 +11,7 @@ export class Game {
     constructor() {
         this.canvas = window.gameCanvas
         this.hitBoxOn = false
+        this.events = new EventEmitter()
         this.throttleFunc = function(func, limit)  {
           
             let inThrottle
@@ -26,7 +28,7 @@ export class Game {
 
         this.imageManager = new ImageManager()
         this.audioManager = new AudioManager()
-        this.uiManager = new UIManager(this) //handles panels, menus etc.
+        this.uiManager = new UIManager(this.events) //handles panels, menus etc.
         this.enemyManager = new EnemyManager()
         this.enemySpawner = new EnemySpawner(this.enemyManager)
 
@@ -50,9 +52,15 @@ export class Game {
 
             //  new Promise(resolve => setTimeout(resolve, 1))
         ]);
-              
-        //loadin screen
-    //    [await new Promise(resolve => setTimeout(resolve, 55))]
+        
+        //register events so EventEmitter can play them thru AudioManager
+
+        this.events.on(EVENTS.SOUND, (name) => this.audioManager.play(name))
+        this.events.on(EVENTS.GAME_PAUSE, () => this.pause())
+        this.events.on(EVENTS.GAME_START, () => this.startGame())
+        this.events.on(EVENTS.GAME_RESUME, () => this.resume())
+        this.events.on(EVENTS.GAME_RETURN_TO_MENU, () => this.returnToMenu())
+
 
         this.uiManager.showPanel('mainMenu')
 
@@ -62,7 +70,6 @@ export class Game {
         window.addEventListener('resize', this.throttleFunc(this.resizeCanvas, 100))
      
 
-        
         //starts counting time when gameloop starts
         this.lastTime = performance.now()
 
@@ -99,7 +106,7 @@ export class Game {
     setupInput() {
         window.addEventListener('keydown', ({key}) => {
             
-            if (key == 'q') {
+            if ('qQ'.includes(key)) {
                 this.hitBoxOn = !this.hitBoxOn
             }
             else this.keys[key.toLowerCase()] = true
@@ -130,7 +137,7 @@ export class Game {
 
 
     startGame() {
-         this.playSound('button_click')
+        this.events.emit(EVENTS.SOUND, 'button_click')
         this.state = GAME_STATES.PLAYING
         this.uiManager.hideAllPanels()
         this.time = 0  
@@ -145,27 +152,27 @@ export class Game {
         this.lastTime = performance.now()
     }
     pause(){
-        this.playSound('pause')
+        this.events.emit(EVENTS.SOUND, 'pause')
         this.state = GAME_STATES.PAUSED
         this.uiManager.showPanel('pauseMenu')
     }
     resume(){
-        this.playSound('unpause')
+         this.events.emit(EVENTS.SOUND, 'unpause')
         this.state = GAME_STATES.PLAYING
         this.uiManager.hideAllPanels()
     }
 
     returnToMenu(){
-        this.playSound('button_click')
+        this.events.emit(EVENTS.SOUND, 'button_click')
         this.state = 'menu'
         this.uiManager.hideAllPanels()
         this.uiManager.hideTimer()
         this.uiManager.showPanel('mainMenu')
     } 
 
-    playSound(name) {
-        this.audioManager.play(name)
-    }
+    // playSound(name) {
+    //     this.audioManager.play(name)
+    // }
 
     resizeCanvas() {
      

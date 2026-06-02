@@ -14,7 +14,7 @@ export class AudioManager {
                 resolve()
             }
             audio.onerror = () => {
-                alert(`sound of ${name} cant be loaded or played, will skip`)
+               
                 resolve()
             }
         })

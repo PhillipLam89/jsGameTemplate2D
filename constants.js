@@ -14,3 +14,12 @@ export const GAME_STATES =  {
 export const  ENEMY_DESPAWN_MARGIN = 200
 export const ENEMY_SPAWN_MARGIN = 100
 export const ENEMY_SPAWN_INTERVAL = 1
+
+export const EVENTS = {
+    SOUND: 'sound',
+    GAME_START: 'game:start',
+    GAME_PAUSE: 'game:pause',
+    GAME_RESUME:'game:resume',
+    GAME_RETURN_TO_MENU: 'game:returnToMenu'
+
+}

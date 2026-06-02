@@ -1,25 +1,26 @@
+import { EVENTS } from "./constants.js"
 export class UIManager {
-    constructor(game) {
-        this.game = game
+    constructor(events) {
+        this.events = events
         this.setupEventListeners()
         this.timerEl = window?.timer
        
     }
     setupEventListeners() {
         window.playBtn.onclick = () => {
-            this.game.startGame()
+            this.events.emit(EVENTS.GAME_START)
         }
         window.resumeBtn.onclick = () => {
-            this.game.resume()
+             this.events.emit(EVENTS.GAME_RESUME)
         }      
 
         window.quitBtn.onclick = () => {
-            this.game.returnToMenu()
+             this.events.emit(EVENTS.GAME_RETURN_TO_MENU)
         }
         window.gameContainer.onmouseover = (e) => {
             e.target.tagName == 'BUTTON'  
                         &&
-            this.game.playSound('button_hover')            
+            this.events.emit(EVENTS.SOUND, 'button_hover')          
         }  
         
 
@@ -53,3 +54,4 @@ export class UIManager {
         if (this.timerEl) this.timerEl.textContent = `${mins}:${secs}`
     }
 }
+
