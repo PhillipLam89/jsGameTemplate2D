@@ -5,11 +5,11 @@ export class EnemySpawner { //handles timing, spawn location, type
         this.enemyManager = enemyManager
         this.spawnTimer = 0
         this.spawnInterval = ENEMY_SPAWN_INTERVAL
-
-        this.enemyTypes = Object.keys(enemyData)
-        // for (const type in enemyData) {
-        //     this.enemyTypes.push(type)
-        // }
+        this.enemyTypes = []
+        // this.enemyTypes = Object.keys(enemyData)
+        for (const type in enemyData) {
+            this.enemyTypes.push(type)
+        }
    
     }
     update(dt) {

@@ -34,16 +34,16 @@ export class UIManager {
         document.getElementById(panelID)?.classList.add('active')
     }
 
-    showTimer(){
+    showHUD(){
         // const timerElement = document.getElementById('timer')
-        if (this.timerEl) {
-            this.timerEl.style.display = 'block'
+        if (window.hud) {
+            window.hud.style.display = 'block'
         }
     }
-    hideTimer(){
+    hideHUD(){
         // const timerElement = document.getElementById('timer')
-        if (this.timerEl) {
-            this.timerEl.style.display = 'none'
+        if (window.hud) {
+            window.hud.style.display = 'none'
         }     
     }
     updateTimer(time){
@@ -52,6 +52,11 @@ export class UIManager {
             secs = (secs >= 10) ? secs : ('0' + secs)
 
         if (this.timerEl) this.timerEl.textContent = `${mins}:${secs}`
+    }
+    updateHealthBar(health, maxHealth) {
+        if (!window.healthBarFill) return
+        const percent = Math.max(0, health / maxHealth)
+        window.healthBarFill.style.setProperty('--health-pct', percent)
     }
 }
 

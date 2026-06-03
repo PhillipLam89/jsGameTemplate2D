@@ -7,6 +7,9 @@ import { AudioManager } from "./AudioManager.js"
 import { UIManager } from "./UIManager.js"
 import { EnemyManager } from "./EnemyManager.js"
 import { EnemySpawner } from "./EnemySpawner.js"
+import { CollisionSystem } from "./CollisionSystem.js"
+import { CollisionManger } from "./CollisionManager.js"
+
 export class Game {
     constructor() {
         this.canvas = window.gameCanvas
@@ -33,6 +36,8 @@ export class Game {
         this.enemySpawner = new EnemySpawner(this.enemyManager)
 
         this.renderSystem = new RenderSystem(this, this.canvas, this.imageManager)
+        this.collisionSystem = new CollisionSystem()
+        this.collisionManager = new CollisionManger(this.collisionSystem, this.events)
         this.player = new Player(this)
 
         //keeps track of pressed keys
@@ -62,6 +67,13 @@ export class Game {
         this.events.on(EVENTS.GAME_RETURN_TO_MENU, () => this.returnToMenu())
 
 
+        //player events
+
+        this.events.on(EVENTS.PLAYER_DAMAGED, (health, maxHealth) => {
+            this.events.emit(EVENTS.SOUND, 'player_hurt')
+            this.uiManager.updateHealthBar(health, maxHealth)
+        })
+
         this.uiManager.showPanel('mainMenu')
 
       
@@ -87,19 +99,20 @@ export class Game {
             this.uiManager.updateTimer(this.time)
         }
         
-
-        this.update(dt)
+        const activeEnemies = this.enemyManager.getActiveEnemies()
+        this.update(dt, activeEnemies)
         this.renderSystem.render(this.state, 
                                 this.player,
-                                this.enemyManager.getActiveEnemies())
+                                activeEnemies)
     
         requestAnimationFrame((t) => this.gameLoop(t))
     }
-    update(dt) { //runs every frame
+    update(dt, activeEnemies) { //runs every frame
         if (this.state !== GAME_STATES.PLAYING) return
         this.player.update(dt, this.keys)
         this.enemyManager.update(dt, this.player)
         this.enemySpawner.update(dt)
+        this.collisionManager.update(this.player, activeEnemies)
     }
 
 
@@ -141,12 +154,18 @@ export class Game {
         this.state = GAME_STATES.PLAYING
         this.uiManager.hideAllPanels()
         this.time = 0  
-        this.uiManager.showTimer()
-
-        //resets player position if restarted
+        this.uiManager.showHUD()
+        
+                //resets player position if restarted
         this.player.reset()
         this.enemyManager.reset()
         this.enemySpawner.reset()
+
+        //resets player to full hp when new game starts
+        this.uiManager.updateHealthBar(this.player.health, this.player.maxHealth)
+      
+
+
 
 
         this.lastTime = performance.now()
@@ -166,7 +185,7 @@ export class Game {
         this.events.emit(EVENTS.SOUND, 'button_click')
         this.state = 'menu'
         this.uiManager.hideAllPanels()
-        this.uiManager.hideTimer()
+        this.uiManager.hideHUD()
         this.uiManager.showPanel('mainMenu')
     } 
 

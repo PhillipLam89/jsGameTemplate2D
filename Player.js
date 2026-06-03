@@ -6,11 +6,13 @@ export class Player {
         this.width = playerData.width   
         this.height = playerData.height
 
+        
         this.x = (GAME_WIDTH - this.width) / 2
         this.y = (GAME_HEIGHT - this.height) / 2
-
+        this.collisionRadius = playerData.collisionRadius
         this.speed = playerData.speed  //pixels moved per sec by player
-
+        this.maxHealth = playerData.maxHealth
+        this.health = this.maxHealth
         //upgrade multipliers
         this.speedMultiplier = 1
 
@@ -21,6 +23,7 @@ export class Player {
         this.y = (GAME_HEIGHT - this.height) / 2
         this.speed = playerData.speed
         this.speedMultiplier = 1
+        this.health = this.maxHealth
     }
 
     update(dt, keys) { //moves player
@@ -48,6 +51,10 @@ export class Player {
 
         this.y = Math.min(GAME_HEIGHT - this.height, this.y) //blocks up
         if (0 > this.y) this.y  = 0  //blocks down
+    }
+    takeDamage(amount) {
+        this.health = Math.max(0, this.health - amount)
+        return true
     }
     
 }
