@@ -6,11 +6,11 @@ export class SeekBehavior {
         const len = Math.hypot(dx, dy)
 
         if (len > 0) {
-            dx = dx / len
-            dy = dy / len
+            const newDx = dx / len
+            const newDy = dy / len
 
-           enemy.x+= dx * enemy.speed * dt
-           enemy.y+= dy * enemy.speed * dt
+           enemy.x+= newDx * enemy.speed * dt
+           enemy.y+= newDy * enemy.speed * dt
         }
     }
 }
