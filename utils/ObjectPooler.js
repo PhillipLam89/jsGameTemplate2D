@@ -7,18 +7,19 @@ export class ObjectPooler {
 
         //pre-populate pool
 
-        // for (const _ of poolSize) {
-        //     this.pool.push(this.factoryFn()) //creates inactive enemy/particle in pool
-        // }
+
 
         while (this.pool.length < poolSize) {
             this.pool.push(this.factoryFn())
         }
+        // for (let i = 0; i < poolSize; i++){
+        //     this.pool.push(this.factoryFn());
+        // }
     }
 
     get() {
         let obj = null
-        if (this.pool.length) {
+        if (this.pool.length > 0) {
             obj = this.pool.pop()
         } else {
             obj = this.factoryFn()
@@ -43,18 +44,23 @@ export class ObjectPooler {
     release(obj) {
         const i = this.active.indexOf(obj)
         if (i > -1) {
-            this.active.splice(indexedDB,1)
+            this.active.splice(i,1)
             obj.reset()
             this.pool.push(obj) //puts in inactive arr 
         }
     }
     releaseAll() {
    
-        for (const obj of this.active) {
-            obj.reset()
-            this.pool.push(obj)
+        // for (const obj of this.active) {
+        //     obj.reset()
+        //     this.pool.push(obj)
+        // }
+        // this.active = []
+        for (let i = 0; i < this.active.length; i++){
+            this.active[i].reset();
+            this.pool.push(this.active[i]);
         }
-        this.active = []
+        this.active = [];
 
     }
 }

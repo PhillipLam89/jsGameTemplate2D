@@ -20,23 +20,34 @@ export class EnemySpawner { //handles timing, spawn location, type
         }
     }
     spawnWave(){
-        const randomIndex = Math.floor(Math.random() * this.enemyTypes.length)
-        const type = this.enemyTypes[randomIndex]
+       // choose random enemy type
+        const type = this.enemyTypes[Math.floor(Math.random() * this.enemyTypes.length)];
+        // spawn it at random edge
+        const edge = Math.floor(Math.random() * 4);
+        let x, y;
 
-        //spawns at random edge
-        const edge = Math.floor(Math.random() * 4)
-
-
-        const arr = [{x:Math.random()* GAME_WIDTH, y:-ENEMY_SPAWN_MARGIN}, 
-                     {x:GAME_WIDTH + ENEMY_SPAWN_MARGIN, y: Math.random() * GAME_HEIGHT}, 
-                     {x:Math.random()* GAME_WIDTH,y:GAME_HEIGHT + ENEMY_SPAWN_MARGIN}, 
-                     {x: -ENEMY_SPAWN_MARGIN, y: Math.random() * GAME_HEIGHT}
-                    ]
-       
-
-        const {x,y} = arr[edge]
-
-        this.enemyManager.spawn(type, x, y)
+        switch(edge){
+            case 0: // top
+                x = Math.random() * GAME_WIDTH;
+                y = -ENEMY_SPAWN_MARGIN;
+                break;
+            case 1: // right
+                x = GAME_WIDTH + ENEMY_SPAWN_MARGIN;
+                y = Math.random() * GAME_HEIGHT;
+                break;
+            case 2: // bottom
+                x = Math.random() * GAME_WIDTH;
+                y = GAME_HEIGHT + ENEMY_SPAWN_MARGIN;
+                break;
+            case 3: // left
+                x = -ENEMY_SPAWN_MARGIN;
+                y = Math.random() * GAME_HEIGHT;
+                break;
+            default:
+                x = -ENEMY_SPAWN_MARGIN;
+                y = Math.random() * GAME_HEIGHT;
+        }
+        this.enemyManager.spawn(type, x, y);
                 
     }
     reset() {

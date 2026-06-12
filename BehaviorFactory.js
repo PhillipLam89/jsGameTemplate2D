@@ -1,4 +1,4 @@
-import { SeekBehavior } from "./seekBehavior.js";
+import { SeekBehavior } from "./SeekBehavior.js";
 import { DriftBehavior } from "./DriftBehavior.js";
 export class BehaviorFactory {
     static create(behaviorType) {

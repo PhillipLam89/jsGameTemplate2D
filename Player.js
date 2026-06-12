@@ -46,11 +46,8 @@ export class Player {
         } 
 
         //keeping player in-bounds
-        this.x = Math.min(GAME_WIDTH - this.width, this.x) //blocks rightwards
-        if (0 > this.x) this.x  = 0  //blocks leftwards
-
-        this.y = Math.min(GAME_HEIGHT - this.height, this.y) //blocks up
-        if (0 > this.y) this.y  = 0  //blocks down
+        this.x = Math.max(0, Math.min(GAME_WIDTH - this.width, this.x));
+        this.y = Math.max(0, Math.min(GAME_HEIGHT - this.height, this.y));
     }
     takeDamage(amount) {
         this.health = Math.max(0, this.health - amount)

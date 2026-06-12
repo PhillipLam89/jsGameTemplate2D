@@ -77,10 +77,10 @@ export class Game {
         this.uiManager.showPanel('mainMenu')
 
       
-        this.setupInput()
+     
         this.resizeCanvas()
         window.addEventListener('resize', this.throttleFunc(this.resizeCanvas, 100))
-     
+        this.setupInput()
 
         //starts counting time when gameloop starts
         this.lastTime = performance.now()
@@ -90,7 +90,7 @@ export class Game {
         requestAnimationFrame((t) => this.gameLoop(t))
     }
     gameLoop(timeStamp) {
-        if (this.lastTime == 0) this.lastTime = timeStamp
+    
         const dt = Math.min( (timeStamp - this.lastTime) / 1000,   0.1)
         this.lastTime = timeStamp
         

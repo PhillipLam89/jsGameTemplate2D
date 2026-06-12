@@ -18,19 +18,13 @@ export class EnemyManager {
             },ENEMY_POOL_SIZE)
         }
 
-        // this.pool = new ObjectPooler( () => {
-        //    const data = enemyData.drifter
-        //    const behavior = BehaviorFactory.create(data.behaviorType)
-        //    return new Enemy(data, behavior)
-        // }, ENEMY_POOL_SIZE)
-
 
     }
     spawn(type, x,y) {
         const pool = this.pools[type]
 
         if (!pool) {
-            return null
+            return 
         }
         const enemy =  pool.get()
         enemy.spawn(x,y)
